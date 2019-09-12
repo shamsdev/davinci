@@ -9,6 +9,7 @@ Davinci.get().load(imageUrl).into(image).start();
 ```
 # Features
 Customizable image placeholders
+
 ![](https://user-images.githubusercontent.com/15744733/64792966-7b77d000-d58f-11e9-853f-3ad438375ec6.gif)
 ```csharp
 Davinci.get()
@@ -20,6 +21,7 @@ Davinci.get()
 ```
 
 Loading Fade Time
+
 ![](https://user-images.githubusercontent.com/15744733/64794033-2d63cc00-d591-11e9-981d-167704a92be7.gif)
 ```csharp
 Davinci.get()
@@ -30,6 +32,7 @@ Davinci.get()
 ```
 
 Fully access to operation porgress and callbacks
+
 ![](https://user-images.githubusercontent.com/15744733/64794838-5c2e7200-d592-11e9-90df-ec39b89b0aab.gif)
 ```csharp
 Davinci.get()
