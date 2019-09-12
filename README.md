@@ -26,7 +26,7 @@ Davinci.get()
 ```csharp
 Davinci.get()
     .load(url)
-    .setFadeTime(2)
+    .setFadeTime(2) // 0 for disable fading
     .into(image)
     .start();
 ```
