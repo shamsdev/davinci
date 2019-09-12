@@ -7,7 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Davinci - Powerful image loader library for unity.
+/// Davinci - A powerful, esay-to-use image downloading and caching library for Unity
+/// https://github.com/shamsdev/davinci
 /// Developed by ShamsDEV.com
 /// © 2019 ShamsDEV.com All Rights Reserved.
 /// </summary>
@@ -20,7 +21,7 @@ public class Davinci : MonoBehaviour
     private string url = null;
     private Image image = null;
 
-    private Sprite placeholderSpr, errorSpr;
+    private Sprite loadingSpr, errorSpr;
 
     private Action onStartAction,
         onDownloadedAction, OnLoadedAction, onEndAction;
@@ -167,11 +168,11 @@ public class Davinci : MonoBehaviour
     /// <summary>
     /// Set the sprite of image when davinci is downloading and loading image
     /// </summary>
-    /// <param name="placeholder">placeholder sprite</param>
+    /// <param name="loadingSprite">loading sprite</param>
     /// <returns></returns>
-    public Davinci setPlaceHolder(Sprite placeholder)
+    public Davinci setLoadingSprite(Sprite loadingSprite)
     {
-        this.placeholderSpr = placeholder;
+        this.loadingSpr = loadingSprite;
 
         if (enableLog)
             Debug.Log("[Davinci] Placeholder has been set.");
@@ -189,7 +190,7 @@ public class Davinci : MonoBehaviour
         this.errorSpr = errorSprite;
 
         if (enableLog)
-            Debug.Log("[Davinci] Error sprite setted.");
+            Debug.Log("[Davinci] Error sprite set.");
 
         return this;
     }
@@ -239,8 +240,11 @@ public class Davinci : MonoBehaviour
         if (enableLog)
             Debug.Log("[Davinci] Start Working.");
 
-        if (placeholderSpr != null)
-            image.sprite = placeholderSpr;
+        if (loadingSpr != null)
+        {
+            image.sprite = loadingSpr;
+            image.color = Color.white;
+        }
 
         if (onStartAction != null)
             onStartAction.Invoke();
@@ -306,7 +310,8 @@ public class Davinci : MonoBehaviour
             yield return null;
         }
 
-        File.WriteAllBytes(filePath + uniqueHash, www.bytes);
+        if (www.error == null)
+            File.WriteAllBytes(filePath + uniqueHash, www.bytes);
 
         www.Dispose();
         www = null;
@@ -366,7 +371,7 @@ public class Davinci : MonoBehaviour
             float time = Time.time;
             while (color.a < 1)
             {
-                color.a = Mathf.Lerp(color.a, 1, (Time.time - time) / fadeTime);
+                color.a = Mathf.Lerp(0, 1, (Time.time - time) / fadeTime);
                 image.color = color;
                 yield return null;
             }
