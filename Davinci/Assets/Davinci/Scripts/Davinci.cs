@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Davinci - A powerful, esay-to-use image downloading and caching library for Unity
+/// v 1.0 beta
 /// https://github.com/shamsdev/davinci
 /// Developed by ShamsDEV.com
 /// © 2019 ShamsDEV.com All Rights Reserved.
