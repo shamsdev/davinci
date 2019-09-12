@@ -69,16 +69,19 @@ Also:
 - Supports Unity UI Image Component
 - Compatible with all platforms and unity versions.
 
-# Usage
+Usage
+----
 Clone the project. Open Davinci/Assets in with unity or import UnityPackage to your existing project.  
 You can see lots of examples in Assets/Examples
 Please see Wiki page for more information and examples
 
-# Development
+Development
+----
 Want to contribute? Great!
 Make a change in your file and instantanously see your updates!
 
-# Todos
+Todos
+----
  - Add support for textures
 
 License
