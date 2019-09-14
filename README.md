@@ -1,5 +1,6 @@
-# Davinci
-A powerful, esay-to-use image downloading and caching library for Unity
+Davinci
+---
+A powerful, esay-to-use image downloading and caching library for **Unity**
 
 ![](https://user-images.githubusercontent.com/15744733/64790065-b75c6680-d58a-11e9-843d-4831fbc60306.gif)
 
@@ -7,7 +8,8 @@ Simple usage - Single line of code and ready to go!
 ```csharp
 Davinci.get().load(imageUrl).into(image).start();
 ```
-# Features
+Features
+---
 ### Customizable image placeholders
 
 ![](https://user-images.githubusercontent.com/15744733/64792966-7b77d000-d58f-11e9-853f-3ad438375ec6.gif)
@@ -71,20 +73,23 @@ Also:
 
 Usage
 ----
-Clone the project. Open Davinci/Assets in with unity or import UnityPackage to your existing project.  
+Clone the project. Open Davinci/Assets in with unity or import UnityPackage to your existing project.
+
 You can see lots of examples in Assets/Examples
+
 Please see Wiki page for more information and examples
 
 Development
 ----
-Want to contribute? Great!
-Make a change in your file and instantanously see your updates!
+Want to contribute? Great! 
 
-Todos
+Make a change in your file and instantaneously see your updates!
+
+TODO
 ----
  - Add support for textures
 
 License
 ----
-Davinci is available under the MIT license. See the LICENSE file for more info.
+**Davinci** is available under the **MIT** license. See the LICENSE file for more info.
 
