@@ -33,7 +33,7 @@ Davinci.get()
     .start();
 ```
 
-### Fully access to operation porgress and callbacks
+### Fully access to operation progress and callbacks
 
 ![](https://user-images.githubusercontent.com/15744733/64794838-5c2e7200-d592-11e9-90df-ec39b89b0aab.gif)
 ```csharp
