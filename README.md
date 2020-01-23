@@ -1,6 +1,6 @@
 Davinci
 ---
-A powerful, esay-to-use image downloading and caching library for **Unity**
+🖼 A powerful, esay-to-use image downloading and caching library for **Unity** in Run-Rime! 😎 
 
 ![](https://user-images.githubusercontent.com/15744733/64790065-b75c6680-d58a-11e9-843d-4831fbc60306.gif)
 
@@ -8,6 +8,10 @@ Simple usage - Single line of code and ready to go!
 ```csharp
 Davinci.get().load(imageUrl).into(image).start();
 ```
+
+🔴Update : Support for any types of Renderer component has been added. now we can download 3d models textures in run-time! 
+![](https://user-images.githubusercontent.com/15744733/72981848-021ca380-3df3-11ea-89b4-1a1d7a6fd225.gif)
+
 Features
 ---
 ### Customizable image placeholders
@@ -16,8 +20,8 @@ Features
 ```csharp
 Davinci.get()
     .load(url)
-    .setLoadingSprite(loadingSpr)
-    .setErrorSprite(errorSpr)
+    .setLoadingPlaceholder(loadingSpr)
+    .setErrorPlaceholder(errorSpr)
     .into(image)
     .start();
 ```
@@ -87,7 +91,8 @@ Make a change in your file and instantaneously see your updates!
 
 TODO
 ----
- - Add support for textures
+ - Add support for textures ✅ 
+ - Improvements
 
 License
 ----
