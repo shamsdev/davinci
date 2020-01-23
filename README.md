@@ -9,7 +9,7 @@ Simple usage - Single line of code and ready to go!
 Davinci.get().load(imageUrl).into(image).start();
 ```
 
-🔴Update : Support for any types of Renderer component has been added. now we can download 3d models textures in run-time!
+🔴 **Update : Support for any types of Renderer component has been added. now we can download 3D model's texture in run-time!**
 
 ![](https://user-images.githubusercontent.com/15744733/72981848-021ca380-3df3-11ea-89b4-1a1d7a6fd225.gif)
 
