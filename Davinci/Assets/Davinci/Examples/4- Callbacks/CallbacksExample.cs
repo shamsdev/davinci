@@ -7,7 +7,7 @@ public class CallbacksExample : MonoBehaviour
     public string imageUrl;
     public Text statusTxt;
 
-    public Sprite loadingSpr, errorSpr;
+    public Texture2D loadingSpr, errorSpr;
 
     private void Start()
     {
@@ -39,8 +39,8 @@ public class CallbacksExample : MonoBehaviour
             {
                 print("Operation has been finished.");
             })
-            .setLoadingSprite(loadingSpr)
-            .setErrorSprite(errorSpr)
+            .setLoadingPlaceholder(loadingSpr)
+            .setErrorPlaceholder(errorSpr)
             .setFadeTime(0.8f)
             .setCached(false)
             .start();

@@ -1,34 +1,31 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class PlaceholdersExample : MonoBehaviour
+public class TextureExamlpe : MonoBehaviour
 {
-    public Image image_1;
-    public Image image_2;
+    public Renderer cube1, cube2;
+    public string imgUrl1, imgUrl2;
 
     public Texture2D loadingSpr, errorSpr;
 
-    public string correctUrl;
-    public string wrongUrl;
-
     private void Start()
     {
-        //use setLoadingSprite and setError sprite to set placeholders
-
         Davinci.get()
-            .load(correctUrl)
+            .load(imgUrl1)
+            .into(cube1)
             .setLoadingPlaceholder(loadingSpr)
             .setErrorPlaceholder(errorSpr)
+            .setFadeTime(2f)
             .setCached(false)
-            .into(image_1)
             .start();
 
         Davinci.get()
-            .load(wrongUrl)
+            .load(imgUrl2)
+            .into(cube2)
             .setLoadingPlaceholder(loadingSpr)
             .setErrorPlaceholder(errorSpr)
+            .setFadeTime(0f)
             .setCached(false)
-            .into(image_2)
             .start();
     }
 }

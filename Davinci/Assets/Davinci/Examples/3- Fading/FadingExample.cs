@@ -7,7 +7,7 @@ public class FadingExample : MonoBehaviour
     public Image image_2;
     public Image image_3;
 
-    public Sprite loadingSpr, errorSpr;
+    public Texture2D loadingSpr, errorSpr;
 
     public string url;
 
@@ -17,16 +17,16 @@ public class FadingExample : MonoBehaviour
 
         Davinci.get()
             .load(url)
-            .setLoadingSprite(loadingSpr)
-            .setErrorSprite(errorSpr)
+            .setLoadingPlaceholder(loadingSpr)
+            .setErrorPlaceholder(errorSpr)
             .into(image_1)
             .setFadeTime(2)
             .start();
 
         Davinci.get()
             .load(url)
-            .setLoadingSprite(loadingSpr)
-            .setErrorSprite(errorSpr)
+            .setLoadingPlaceholder(loadingSpr)
+            .setErrorPlaceholder(errorSpr)
             .into(image_2)
             .setFadeTime(5)
             .start();
@@ -34,8 +34,8 @@ public class FadingExample : MonoBehaviour
         Davinci.get()
             .load(url)
             .setFadeTime(0)//disable fading
-            .setLoadingSprite(loadingSpr)
-            .setErrorSprite(errorSpr)
+            .setLoadingPlaceholder(loadingSpr)
+            .setErrorPlaceholder(errorSpr)
             .into(image_3)
             .start();
     }

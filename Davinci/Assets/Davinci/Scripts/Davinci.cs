@@ -4,14 +4,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
 /// Davinci - A powerful, esay-to-use image downloading and caching library for Unity
-/// v 1.0 beta
-/// https://github.com/shamsdev/davinci
+/// v 1.1 beta
 /// Developed by ShamsDEV.com
-/// © 2019 ShamsDEV.com All Rights Reserved.
+/// copyright (c) ShamsDEV.com All Rights Reserved.
+/// Licensed under the MIT License.
+/// https://github.com/shamsdev/davinci
 /// </summary>
 public class Davinci : MonoBehaviour
 {
@@ -19,18 +21,30 @@ public class Davinci : MonoBehaviour
     private float fadeTime = 1;
     private bool cached = true;
 
+    private enum RendererType
+    {
+        none,
+        uiImage,
+        renderer
+    }
+
+    private RendererType rendererType = RendererType.none;
+    private GameObject targetObj;
     private string url = null;
-    private Image image = null;
 
-    private Sprite loadingSpr, errorSpr;
+    private Texture2D loadingPlaceholder, errorPlaceholder;
 
-    private Action onStartAction,
-        onDownloadedAction, OnLoadedAction, onEndAction;
+    private UnityAction onStartAction,
+        onDownloadedAction,
+        OnLoadedAction,
+        onEndAction;
 
-    private Action<int> onDownloadProgressChange;
-    private Action<string> onErrorAction;
+    private UnityAction<int> onDownloadProgressChange;
+    private UnityAction<string> onErrorAction;
 
-    private static Dictionary<string, Davinci> underProcessDavincies = new Dictionary<string, Davinci>();
+    private static Dictionary<string, Davinci> underProcessDavincies
+        = new Dictionary<string, Davinci>();
+
     private string uniqueHash;
     private int progress;
 
@@ -38,6 +52,7 @@ public class Davinci : MonoBehaviour
 
     static string filePath = Application.persistentDataPath + "/" +
              "davinci" + "/";
+
 
     /// <summary>
     /// Get instance of davinci class
@@ -78,19 +93,35 @@ public class Davinci : MonoBehaviour
     /// <summary>
     /// Set target Image component.
     /// </summary>
-    /// <param name="image">Unity UI image component</param>
+    /// <param name="image">target Unity UI image component</param>
     /// <returns></returns>
     public Davinci into(Image image)
     {
         if (enableLog)
-            Debug.Log("[Davinci] Image set : " + image);
+            Debug.Log("[Davinci] Target as UIImage set : " + image);
 
-        this.image = image;
+        rendererType = RendererType.uiImage;
+        this.targetObj = image.gameObject;
+        return this;
+    }
+
+    /// <summary>
+    /// Set target Renderer component.
+    /// </summary>
+    /// <param name="renderer">target renderer component</param>
+    /// <returns></returns>
+    public Davinci into(Renderer renderer)
+    {
+        if (enableLog)
+            Debug.Log("[Davinci] Target as Renderer set : " + renderer);
+
+        rendererType = RendererType.renderer;
+        this.targetObj = renderer.gameObject;
         return this;
     }
 
     #region Actions
-    public Davinci withStartAction(Action action)
+    public Davinci withStartAction(UnityAction action)
     {
         this.onStartAction = action;
 
@@ -100,7 +131,7 @@ public class Davinci : MonoBehaviour
         return this;
     }
 
-    public Davinci withDownloadedAction(Action action)
+    public Davinci withDownloadedAction(UnityAction action)
     {
         this.onDownloadedAction = action;
 
@@ -110,7 +141,7 @@ public class Davinci : MonoBehaviour
         return this;
     }
 
-    public Davinci withDownloadProgressChangedAction(Action<int> action)
+    public Davinci withDownloadProgressChangedAction(UnityAction<int> action)
     {
         this.onDownloadProgressChange = action;
 
@@ -120,7 +151,7 @@ public class Davinci : MonoBehaviour
         return this;
     }
 
-    public Davinci withLoadedAction(Action action)
+    public Davinci withLoadedAction(UnityAction action)
     {
         this.OnLoadedAction = action;
 
@@ -130,7 +161,7 @@ public class Davinci : MonoBehaviour
         return this;
     }
 
-    public Davinci withErrorAction(Action<string> action)
+    public Davinci withErrorAction(UnityAction<string> action)
     {
         this.onErrorAction = action;
 
@@ -140,7 +171,7 @@ public class Davinci : MonoBehaviour
         return this;
     }
 
-    public Davinci withEndAction(Action action)
+    public Davinci withEndAction(UnityAction action)
     {
         this.onEndAction = action;
 
@@ -169,14 +200,14 @@ public class Davinci : MonoBehaviour
     /// <summary>
     /// Set the sprite of image when davinci is downloading and loading image
     /// </summary>
-    /// <param name="loadingSprite">loading sprite</param>
+    /// <param name="loadingPlaceholder">loading texture</param>
     /// <returns></returns>
-    public Davinci setLoadingSprite(Sprite loadingSprite)
+    public Davinci setLoadingPlaceholder(Texture2D loadingPlaceholder)
     {
-        this.loadingSpr = loadingSprite;
+        this.loadingPlaceholder = loadingPlaceholder;
 
         if (enableLog)
-            Debug.Log("[Davinci] Placeholder has been set.");
+            Debug.Log("[Davinci] Loading placeholder has been set.");
 
         return this;
     }
@@ -184,14 +215,14 @@ public class Davinci : MonoBehaviour
     /// <summary>
     /// Set image sprite when some error occurred during downloading or loading image
     /// </summary>
-    /// <param name="errorSprite">error sprite</param>
+    /// <param name="errorPlaceholder">error texture</param>
     /// <returns></returns>
-    public Davinci setErrorSprite(Sprite errorSprite)
+    public Davinci setErrorPlaceholder(Texture2D errorPlaceholder)
     {
-        this.errorSpr = errorSprite;
+        this.errorPlaceholder = errorPlaceholder;
 
         if (enableLog)
-            Debug.Log("[Davinci] Error sprite set.");
+            Debug.Log("[Davinci] Error placeholder has been set.");
 
         return this;
     }
@@ -232,20 +263,17 @@ public class Davinci : MonoBehaviour
             return;
         }
 
-        if (image == null)
+        if (rendererType == RendererType.none || targetObj == null)
         {
-            error("Image has not been set. Use 'into' function to set target Image component.");
+            error("Target has not been set. Use 'into' function to set target component.");
             return;
         }
 
         if (enableLog)
             Debug.Log("[Davinci] Start Working.");
 
-        if (loadingSpr != null)
-        {
-            image.sprite = loadingSpr;
-            image.color = Color.white;
-        }
+        if (loadingPlaceholder != null)
+            SetLoadingImage();
 
         if (onStartAction != null)
             onStartAction.Invoke();
@@ -281,12 +309,12 @@ public class Davinci : MonoBehaviour
             {
                 underProcessDavincies.Add(uniqueHash, this);
                 StopAllCoroutines();
-                StartCoroutine("downloader");
+                StartCoroutine("Downloader");
             }
         }
     }
 
-    private IEnumerator downloader()
+    private IEnumerator Downloader()
     {
         if (enableLog)
             Debug.Log("[Davinci] Download started.");
@@ -341,41 +369,91 @@ public class Davinci : MonoBehaviour
         }
 
         StopAllCoroutines();
-        StartCoroutine(spriteLoader(null));
+        StartCoroutine(ImageLoader());
     }
 
-    private IEnumerator spriteLoader(Sprite sprite = null)
+    private void SetLoadingImage()
+    {
+        switch (rendererType)
+        {
+            case RendererType.renderer:
+                Renderer renderer = targetObj.GetComponent<Renderer>();
+                renderer.material.mainTexture = loadingPlaceholder;
+                break;
+
+            case RendererType.uiImage:
+                Image image = targetObj.GetComponent<Image>();
+                Sprite sprite = Sprite.Create(loadingPlaceholder,
+                     new Rect(0, 0, loadingPlaceholder.width, loadingPlaceholder.height),
+                     new Vector2(0.5f, 0.5f));
+                image.sprite = sprite;
+
+                break;
+        }
+
+    }
+
+    private IEnumerator ImageLoader(Texture2D texture = null)
     {
         if (enableLog)
             Debug.Log("[Davinci] Start loading image.");
 
-        if (sprite == null)
+        if (texture == null)
         {
             byte[] fileData;
             fileData = File.ReadAllBytes(filePath + uniqueHash);
-            Texture2D texture = new Texture2D(2, 2);
+            texture = new Texture2D(2, 2);
             //ImageConversion.LoadImage(texture, fileData);
             texture.LoadImage(fileData); //..this will auto-resize the texture dimensions.
-
-            sprite = Sprite.Create(texture,
-               new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
         }
 
-        image.sprite = sprite;
-
-        if (fadeTime > 0)
+        Color color;
+        switch (rendererType)
         {
-            Color color = image.color;
-            color.a = 0;
-            image.color = color;
+            case RendererType.renderer:
+                Renderer renderer = targetObj.GetComponent<Renderer>();
+                renderer.material.mainTexture = texture;
+                color = renderer.material.color;
+                float maxAlpha = color.a;
 
-            float time = Time.time;
-            while (color.a < 1)
-            {
-                color.a = Mathf.Lerp(0, 1, (Time.time - time) / fadeTime);
-                image.color = color;
-                yield return null;
-            }
+                if (fadeTime > 0)
+                {
+                    color.a = 0;
+                    renderer.material.color = color;
+
+                    float time = Time.time;
+                    while (color.a < maxAlpha)
+                    {
+                        color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
+                        renderer.material.color = color;
+                        yield return null;
+                    }
+                }
+
+                break;
+
+            case RendererType.uiImage:
+                Image image = targetObj.GetComponent<Image>();
+                Sprite sprite = Sprite.Create(texture,
+                     new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                image.sprite = sprite;
+                color = image.color;
+                maxAlpha = color.a;
+
+                if (fadeTime > 0)
+                {
+                    color.a = 0;
+                    image.color = color;
+
+                    float time = Time.time;
+                    while (color.a < maxAlpha)
+                    {
+                        color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
+                        image.color = color;
+                        yield return null;
+                    }
+                }
+                break;
         }
 
         if (OnLoadedAction != null)
@@ -416,8 +494,8 @@ public class Davinci : MonoBehaviour
         if (onErrorAction != null)
             onErrorAction.Invoke(message);
 
-        if (errorSpr != null)
-            StartCoroutine(spriteLoader(errorSpr));
+        if (errorPlaceholder != null)
+            StartCoroutine(ImageLoader(errorPlaceholder));
         else finish();
     }
 
