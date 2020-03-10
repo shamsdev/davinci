@@ -22,8 +22,8 @@ Features
 ```csharp
 Davinci.get()
     .load(url)
-    .setLoadingPlaceholder(loadingSpr)
-    .setErrorPlaceholder(errorSpr)
+    .setLoadingPlaceholder(loadingTexture)
+    .setErrorPlaceholder(errorTexture)
     .into(image)
     .start();
 ```
