@@ -75,8 +75,11 @@ Davinci.get()
 
 ### Caching Control
 You can simply cache downloaded images and Davinci will not download it next time from same url. It's cool! isn't it? 😁
-(Default is `True`
-`Davinci.get().load(imageUrl).setCached(false).into(image).start();`
+(Default is `True`)
+
+```csharp
+Davinci.get().load(imageUrl).setCached(true).into(image).start();
+```
 
 
 
