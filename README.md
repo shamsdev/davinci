@@ -73,6 +73,13 @@ Davinci.get()
     .start();
 ```
 
+### Caching Control
+You can simply cache downloaded images and Davinci will not download it next time from same url. It's cool! isn't it? 😁
+(Default is `True`
+`Davinci.get().load(imageUrl).setCached(false).into(image).start();`
+
+
+
 Also:
 - Supports Unity UI Image Component
 - Compatible with all platforms and unity versions.
