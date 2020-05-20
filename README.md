@@ -87,6 +87,12 @@ Also:
 - Supports Unity UI Image Component
 - Compatible with all platforms and unity versions.
 
+### Supporting Platforms
+- Standalone Builds
+- Android
+- iOS
+- WebGl
+
 Usage
 ----
 Clone the project. Open Davinci/Assets in with unity or import UnityPackage to your existing project.
