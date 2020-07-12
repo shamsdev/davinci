@@ -8,8 +8,8 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
-/// Davinci - A powerful, esay-to-use image downloading and caching library for Unity
-/// v 1.1 beta
+/// Davinci - A powerful, esay-to-use image downloading and caching library for Unity in Run-Time
+/// v 1.2
 /// Developed by ShamsDEV.com
 /// copyright (c) ShamsDEV.com All Rights Reserved.
 /// Licensed under the MIT License.
@@ -17,6 +17,8 @@ using UnityEngine.UI;
 /// </summary>
 public class Davinci : MonoBehaviour
 {
+    private static bool ENABLE_GLOBAL_LOGS = true;
+
     private bool enableLog = false;
     private float fadeTime = 1;
     private bool cached = true;
@@ -408,69 +410,71 @@ public class Davinci : MonoBehaviour
         }
 
         Color color;
-        switch (rendererType)
-        {
-            case RendererType.renderer:
-                Renderer renderer = targetObj.GetComponent<Renderer>();
 
-                if (renderer == null || renderer.material == null)
+        if (targetObj != null)
+            switch (rendererType)
+            {
+                case RendererType.renderer:
+                    Renderer renderer = targetObj.GetComponent<Renderer>();
+
+                    if (renderer == null || renderer.material == null)
+                        break;
+
+                    renderer.material.mainTexture = texture;
+                    float maxAlpha;
+
+                    if (fadeTime > 0 && renderer.material.HasProperty("_Color"))
+                    {
+                        color = renderer.material.color;
+                        maxAlpha = color.a;
+
+                        color.a = 0;
+
+                        renderer.material.color = color;
+                        float time = Time.time;
+                        while (color.a < maxAlpha)
+                        {
+                            color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
+
+                            if (renderer != null)
+                                renderer.material.color = color;
+
+                            yield return null;
+                        }
+                    }
+
                     break;
 
-                renderer.material.mainTexture = texture;
-                float maxAlpha;
+                case RendererType.uiImage:
+                    Image image = targetObj.GetComponent<Image>();
 
-                if (fadeTime > 0 && renderer.material.HasProperty("_Color"))
-                {
-                    color = renderer.material.color;
+                    if (image == null)
+                        break;
+
+                    Sprite sprite = Sprite.Create(texture,
+                         new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                    image.sprite = sprite;
+                    color = image.color;
                     maxAlpha = color.a;
 
-                    color.a = 0;
-
-                    renderer.material.color = color;
-                    float time = Time.time;
-                    while (color.a < maxAlpha)
+                    if (fadeTime > 0)
                     {
-                        color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
+                        color.a = 0;
+                        image.color = color;
 
-                        if (renderer != null)
-                            renderer.material.color = color;
+                        float time = Time.time;
+                        while (color.a < maxAlpha)
+                        {
+                            color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
 
-                        yield return null;
+                            if (image != null)
+                                image.color = color;
+                            yield return null;
+                        }
                     }
-                }
-
-                break;
-
-            case RendererType.uiImage:
-                Image image = targetObj.GetComponent<Image>();
-
-                if (image == null)
                     break;
-
-                Sprite sprite = Sprite.Create(texture,
-                     new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-
-                image.sprite = sprite;
-                color = image.color;
-                maxAlpha = color.a;
-
-                if (fadeTime > 0)
-                {
-                    color.a = 0;
-                    image.color = color;
-
-                    float time = Time.time;
-                    while (color.a < maxAlpha)
-                    {
-                        color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
-
-                        if (image != null)
-                            image.color = color;
-                        yield return null;
-                    }
-                }
-                break;
-        }
+            }
 
         if (OnLoadedAction != null)
             OnLoadedAction.Invoke();
@@ -521,7 +525,17 @@ public class Davinci : MonoBehaviour
             Debug.Log("[Davinci] Operation has been finished.");
 
         if (!cached)
-            File.Delete(filePath + uniqueHash);
+        {
+            try
+            {
+                File.Delete(filePath + uniqueHash);
+            }
+            catch (Exception ex)
+            {
+                if (enableLog)
+                    Debug.LogError($"[Davinci] Error while removing cached file: {ex.Message}");
+            }
+        }
 
         if (onEndAction != null)
             onEndAction.Invoke();
@@ -532,5 +546,47 @@ public class Davinci : MonoBehaviour
     private void destroyer()
     {
         Destroy(gameObject);
+    }
+
+
+    /// <summary>
+    /// Clear a certain cached file with its url
+    /// </summary>
+    /// <param name="url">Cached file url.</param>
+    /// <returns></returns>
+    public static void ClearCache(string url)
+    {
+        try
+        {
+            File.Delete(filePath + CreateMD5(url));
+
+            if (ENABLE_GLOBAL_LOGS)
+                Debug.Log($"[Davinci] Cached file has been cleared: {url}");
+        }
+        catch (Exception ex)
+        {
+            if (ENABLE_GLOBAL_LOGS)
+                Debug.LogError($"[Davinci] Error while removing cached file: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Clear all davinci cached files
+    /// </summary>
+    /// <returns></returns>
+    public static void ClearAllCachedFiles()
+    {
+        try
+        {
+            Directory.Delete(filePath, true);
+
+            if (ENABLE_GLOBAL_LOGS)
+                Debug.Log("[Davinci] All Davinci cached files has been cleared.");
+        }
+        catch (Exception ex)
+        {
+            if (ENABLE_GLOBAL_LOGS)
+                Debug.LogError($"[Davinci] Error while removing cached file: {ex.Message}");
+        }
     }
 }
