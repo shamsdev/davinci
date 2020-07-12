@@ -81,7 +81,14 @@ You can simply cache downloaded images and Davinci will not download it next tim
 Davinci.get().load(imageUrl).setCached(true).into(image).start();
 ```
 
+Also you can clear Davinci cached files: 
+```csharp
+//For a certain file
+Davinci.CleareCache(imageUrl);
 
+//For all files
+Davinci.ClearAllCachedFiles();
+```
 
 Also:
 - Supports Unity UI Image Component
