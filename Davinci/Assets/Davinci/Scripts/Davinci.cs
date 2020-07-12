@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -412,20 +412,29 @@ public class Davinci : MonoBehaviour
         {
             case RendererType.renderer:
                 Renderer renderer = targetObj.GetComponent<Renderer>();
+
+                if (renderer == null || renderer.material == null)
+                    break;
+
                 renderer.material.mainTexture = texture;
-                color = renderer.material.color;
-                float maxAlpha = color.a;
+                float maxAlpha;
 
-                if (fadeTime > 0)
+                if (fadeTime > 0 && renderer.material.HasProperty("_Color"))
                 {
-                    color.a = 0;
-                    renderer.material.color = color;
+                    color = renderer.material.color;
+                    maxAlpha = color.a;
 
+                    color.a = 0;
+
+                    renderer.material.color = color;
                     float time = Time.time;
                     while (color.a < maxAlpha)
                     {
                         color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
-                        renderer.material.color = color;
+
+                        if (renderer != null)
+                            renderer.material.color = color;
+
                         yield return null;
                     }
                 }
@@ -434,8 +443,13 @@ public class Davinci : MonoBehaviour
 
             case RendererType.uiImage:
                 Image image = targetObj.GetComponent<Image>();
+
+                if (image == null)
+                    break;
+
                 Sprite sprite = Sprite.Create(texture,
                      new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
                 image.sprite = sprite;
                 color = image.color;
                 maxAlpha = color.a;
@@ -449,7 +463,9 @@ public class Davinci : MonoBehaviour
                     while (color.a < maxAlpha)
                     {
                         color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
-                        image.color = color;
+
+                        if (image != null)
+                            image.color = color;
                         yield return null;
                     }
                 }
