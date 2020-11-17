@@ -27,7 +27,8 @@ public class Davinci : MonoBehaviour
     {
         none,
         uiImage,
-        renderer
+        renderer,
+        sprite
     }
 
     private RendererType rendererType = RendererType.none;
@@ -119,6 +120,21 @@ public class Davinci : MonoBehaviour
 
         rendererType = RendererType.renderer;
         this.targetObj = renderer.gameObject;
+        return this;
+    }
+
+    /// <summary>
+    /// Set target Renderer component.
+    /// </summary>
+    /// <param name="renderer">target Sprite component</param>
+    /// <returns></returns>
+    public Davinci into(SpriteRenderer spriteRenderer)
+    {
+        if (enableLog)
+            Debug.Log("[Davinci] Target as Sprite set : " + spriteRenderer);
+
+        rendererType = RendererType.sprite;
+        this.targetObj = spriteRenderer.gameObject;
         return this;
     }
 
@@ -385,10 +401,18 @@ public class Davinci : MonoBehaviour
 
             case RendererType.uiImage:
                 Image image = targetObj.GetComponent<Image>();
+                Sprite imageSprite = Sprite.Create(loadingPlaceholder,
+                     new Rect(0, 0, loadingPlaceholder.width, loadingPlaceholder.height),
+                     new Vector2(0.5f, 0.5f));
+                image.sprite = imageSprite;
+
+                break;
+            case RendererType.sprite:
+                SpriteRenderer spriteRenderer = targetObj.GetComponent<SpriteRenderer>();
                 Sprite sprite = Sprite.Create(loadingPlaceholder,
                      new Rect(0, 0, loadingPlaceholder.width, loadingPlaceholder.height),
                      new Vector2(0.5f, 0.5f));
-                image.sprite = sprite;
+                spriteRenderer.sprite = sprite;
 
                 break;
         }
@@ -451,10 +475,10 @@ public class Davinci : MonoBehaviour
                     if (image == null)
                         break;
 
-                    Sprite sprite = Sprite.Create(texture,
+                    Sprite imageSprite = Sprite.Create(texture,
                          new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
-                    image.sprite = sprite;
+                    image.sprite = imageSprite;
                     color = image.color;
                     maxAlpha = color.a;
 
@@ -470,6 +494,35 @@ public class Davinci : MonoBehaviour
 
                             if (image != null)
                                 image.color = color;
+                            yield return null;
+                        }
+                    }
+                    break;
+                case RendererType.sprite:
+                    SpriteRenderer spriteRenderer = targetObj.GetComponent<SpriteRenderer>();
+
+                    if (spriteRenderer == null)
+                        break;
+
+                    Sprite sprite = Sprite.Create(texture,
+                         new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                    spriteRenderer.sprite = sprite;
+                    color = spriteRenderer.color;
+                    maxAlpha = color.a;
+
+                    if (fadeTime > 0)
+                    {
+                        color.a = 0;
+                        spriteRenderer.color = color;
+
+                        float time = Time.time;
+                        while (color.a < maxAlpha)
+                        {
+                            color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
+
+                            if (spriteRenderer != null)
+                                spriteRenderer.color = color;
                             yield return null;
                         }
                     }
