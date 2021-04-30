@@ -1,6 +1,6 @@
 Davinci
 ---
-🖼 A powerful, esay-to-use image downloading and caching library for **Unity** in Run-Time! 😎 
+🖼 A powerful, easy-to-use image downloading and caching library for **Unity** in Run-Time! 😎 
 
 ![](https://user-images.githubusercontent.com/15744733/64790065-b75c6680-d58a-11e9-843d-4831fbc60306.gif)
 
