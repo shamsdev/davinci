@@ -6,6 +6,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.Networking;
+
 
 /// <summary>
 /// Davinci - A powerful, esay-to-use image downloading and caching library for Unity in Run-Time
@@ -321,7 +323,8 @@ public class Davinci : MonoBehaviour
         if (enableLog)
             Debug.Log("[Davinci] Download started.");
 
-        var www = new WWW(url);
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+        yield return www.SendWebRequest();
 
         while (!www.isDone)
         {
@@ -331,7 +334,7 @@ public class Davinci : MonoBehaviour
                 yield break;
             }
 
-            progress = Mathf.FloorToInt(www.progress * 100);
+            progress = Mathf.FloorToInt(www.downloadProgress * 100);
             if (onDownloadProgressChange != null)
                 onDownloadProgressChange.Invoke(progress);
 
@@ -342,7 +345,7 @@ public class Davinci : MonoBehaviour
         }
 
         if (www.error == null)
-            File.WriteAllBytes(filePath + uniqueHash, www.bytes);
+            File.WriteAllBytes(filePath + uniqueHash, www.downloadHandler.data);
 
         www.Dispose();
         www = null;
