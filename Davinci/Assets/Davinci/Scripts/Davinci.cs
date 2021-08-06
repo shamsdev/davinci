@@ -6,7 +6,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+#if UNITY_2018_3_OR_NEWER
 using UnityEngine.Networking;
+#endif
 
 
 /// <summary>
@@ -323,8 +325,12 @@ public class Davinci : MonoBehaviour
         if (enableLog)
             Debug.Log("[Davinci] Download started.");
 
+#if UNITY_2018_3_OR_NEWER
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
         yield return www.SendWebRequest();
+#else
+        var www = new WWW(url);
+#endif
 
         while (!www.isDone)
         {
@@ -333,8 +339,13 @@ public class Davinci : MonoBehaviour
                 error("Error while downloading the image : " + www.error);
                 yield break;
             }
-
+            
+#if UNITY_2018_3_OR_NEWER
             progress = Mathf.FloorToInt(www.downloadProgress * 100);
+#else
+            progress = Mathf.FloorToInt(www.progress * 100);
+#endif
+
             if (onDownloadProgressChange != null)
                 onDownloadProgressChange.Invoke(progress);
 
@@ -344,8 +355,13 @@ public class Davinci : MonoBehaviour
             yield return null;
         }
 
+#if UNITY_2018_3_OR_NEWER
         if (www.error == null)
             File.WriteAllBytes(filePath + uniqueHash, www.downloadHandler.data);
+#else
+        if (www.error == null)
+            File.WriteAllBytes(filePath + uniqueHash, www.bytes);
+#endif
 
         www.Dispose();
         www = null;
