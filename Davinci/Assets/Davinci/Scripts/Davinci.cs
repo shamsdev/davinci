@@ -123,7 +123,7 @@ public class Davinci : MonoBehaviour
         return this;
     }
 
-    public Davinci into(SpriteRenderer spriteRenderer) 
+    public Davinci into(SpriteRenderer spriteRenderer)
     {
         if (enableLog)
             Debug.Log("[Davinci] Target as SpriteRenderer set : " + spriteRenderer);
