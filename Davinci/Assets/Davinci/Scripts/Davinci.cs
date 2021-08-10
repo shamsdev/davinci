@@ -53,7 +53,7 @@ public class Davinci : MonoBehaviour
     private bool success = false;
 
     static string filePath = Application.persistentDataPath + "/" +
-             "davinci" + "/";
+            "davinci" + "/";
 
 
     /// <summary>
@@ -386,8 +386,8 @@ public class Davinci : MonoBehaviour
             case RendererType.uiImage:
                 Image image = targetObj.GetComponent<Image>();
                 Sprite sprite = Sprite.Create(loadingPlaceholder,
-                     new Rect(0, 0, loadingPlaceholder.width, loadingPlaceholder.height),
-                     new Vector2(0.5f, 0.5f));
+                    new Rect(0, 0, loadingPlaceholder.width, loadingPlaceholder.height),
+                    new Vector2(0.5f, 0.5f));
                 image.sprite = sprite;
 
                 break;
@@ -452,7 +452,7 @@ public class Davinci : MonoBehaviour
                         break;
 
                     Sprite sprite = Sprite.Create(texture,
-                         new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                        new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
                     image.sprite = sprite;
                     color = image.color;
