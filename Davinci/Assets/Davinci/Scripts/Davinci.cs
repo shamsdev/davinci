@@ -122,11 +122,11 @@ public class Davinci : MonoBehaviour
         this.targetObj = renderer.gameObject;
         return this;
     }
-	
+
     public Davinci into(SpriteRenderer spriteRenderer) {
         if (enableLog)
             Debug.Log("[Davinci] Target as SpriteRenderer set : " + spriteRenderer);
-		
+
         rendererType = RendererType.sprite;
         this.targetObj = spriteRenderer.gameObject;
         return this;
@@ -401,7 +401,7 @@ public class Davinci : MonoBehaviour
                 image.sprite = sprite;
 
                 break;
-				
+
             case RendererType.sprite:
                 SpriteRenderer spriteRenderer = targetObj.GetComponent<SpriteRenderer>();
                     Sprite spriteImage = Sprite.Create(loadingPlaceholder,
@@ -491,7 +491,7 @@ public class Davinci : MonoBehaviour
                         }
                     }
                     break;
-					
+
                 case RendererType.sprite:
                     SpriteRenderer spriteRenderer = targetObj.GetComponent<SpriteRenderer>();
 
