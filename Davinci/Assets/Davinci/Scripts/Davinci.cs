@@ -30,7 +30,8 @@ public class Davinci : MonoBehaviour
     {
         none,
         uiImage,
-        renderer
+        renderer,
+        sprite
     }
 
     private RendererType rendererType = RendererType.none;
@@ -122,6 +123,16 @@ public class Davinci : MonoBehaviour
 
         rendererType = RendererType.renderer;
         this.targetObj = renderer.gameObject;
+        return this;
+    }
+
+    public Davinci into(SpriteRenderer spriteRenderer)
+    {
+        if (enableLog)
+            Debug.Log("[Davinci] Target as SpriteRenderer set : " + spriteRenderer);
+
+        rendererType = RendererType.sprite;
+        this.targetObj = spriteRenderer.gameObject;
         return this;
     }
 
@@ -408,6 +419,14 @@ public class Davinci : MonoBehaviour
                 image.sprite = sprite;
 
                 break;
+
+            case RendererType.sprite:
+                SpriteRenderer spriteRenderer = targetObj.GetComponent<SpriteRenderer>();
+                Sprite spriteImage = Sprite.Create(loadingPlaceholder,
+                    new Rect(0, 0, loadingPlaceholder.width, loadingPlaceholder.height),
+                    new Vector2(0.5f, 0.5f));
+
+                spriteRenderer.sprite = spriteImage;
         }
 
     }
@@ -487,6 +506,36 @@ public class Davinci : MonoBehaviour
 
                             if (image != null)
                                 image.color = color;
+                            yield return null;
+                        }
+                    }
+                    break;
+
+                case RendererType.sprite:
+                    SpriteRenderer spriteRenderer = targetObj.GetComponent<SpriteRenderer>();
+
+                    if (spriteRenderer == null)
+                        break;
+
+                    Sprite spriteImage = Sprite.Create(texture,
+                        new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                    spriteRenderer.sprite = spriteImage;
+                    color = spriteRenderer.color;
+                    maxAlpha = color.a;
+
+                    if (fadeTime > 0)
+                    {
+                        color.a = 0;
+                        spriteRenderer.color = color;
+
+                        float time = Time.time;
+                        while (color.a < maxAlpha)
+                        {
+                            color.a = Mathf.Lerp(0, maxAlpha, (Time.time - time) / fadeTime);
+
+                            if (spriteRenderer != null)
+                                spriteRenderer.color = color;
                             yield return null;
                         }
                     }
