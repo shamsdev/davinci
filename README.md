@@ -9,7 +9,7 @@ Simple usage - Single line of code and ready to go!
 Davinci.get().load(imageUrl).into(image).start();
 ```
 
-🔴 **Update : Support for any types of Renderer component has been added. now we can download 3D model's texture in run-time!**
+🔴 **Update : Support for any type of Renderer components has been added. now we can download 3D model's textures in run-time!**
 
 ![](https://user-images.githubusercontent.com/15744733/72981848-021ca380-3df3-11ea-89b4-1a1d7a6fd225.gif)
 
@@ -74,7 +74,7 @@ Davinci.get()
 ```
 
 ### Caching Control
-You can simply cache downloaded images and Davinci will not download it next time from same url. It's cool! isn't it? 😁
+You can simply cache downloaded images so Davinci won't download it again from the same url. It's cool! Isn't it? 😁
 (Default is `True`)
 
 ```csharp
@@ -102,11 +102,11 @@ Also:
 
 Usage
 ----
-Clone the project. Open Davinci/Assets in with unity or import UnityPackage to your existing project.
+Clone the project. Open Davinci/Assets in unity or import the UnityPackage to your existing project.
 
 You can see lots of examples in Assets/Examples
 
-Please see Wiki page for more information and examples
+Please see the Wiki page for more information and examples
 
 Development
 ----
