@@ -427,6 +427,7 @@ public class Davinci : MonoBehaviour
                     new Vector2(0.5f, 0.5f));
 
                 spriteRenderer.sprite = spriteImage;
+                break;
         }
 
     }
