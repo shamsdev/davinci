@@ -31,11 +31,13 @@ public class Davinci : MonoBehaviour
         none,
         uiImage,
         renderer,
+        material,
         sprite
     }
 
     private RendererType rendererType = RendererType.none;
     private GameObject targetObj;
+    private Material targetMaterial;
     private string url = null;
 
     private Texture2D loadingPlaceholder, errorPlaceholder;
@@ -53,8 +55,6 @@ public class Davinci : MonoBehaviour
 
     private string uniqueHash;
     private int progress;
-
-    private bool success = false;
 
     static string filePath = Application.persistentDataPath + "/" +
             "davinci" + "/";
@@ -123,6 +123,21 @@ public class Davinci : MonoBehaviour
 
         rendererType = RendererType.renderer;
         this.targetObj = renderer.gameObject;
+        return this;
+    }
+
+    /// <summary>
+    /// Set target Renderer component.
+    /// </summary>
+    /// <param name="material">target material component</param>
+    /// <returns></returns>
+    public Davinci into(Material material)
+    {
+        if (enableLog)
+            Debug.Log("[Davinci] Target as Material set : " + material);
+
+        rendererType = RendererType.material;
+        this.targetMaterial = material;
         return this;
     }
 
@@ -275,11 +290,11 @@ public class Davinci : MonoBehaviour
         }
         catch (Exception ex)
         {
-            error("Url is not correct.");
+            error($"Url is not correct: {ex.Message}");
             return;
         }
 
-        if (rendererType == RendererType.none || targetObj == null)
+        if (rendererType == RendererType.none || (targetObj == null && targetMaterial == null))
         {
             error("Target has not been set. Use 'into' function to set target component.");
             return;
@@ -411,6 +426,11 @@ public class Davinci : MonoBehaviour
                 renderer.material.mainTexture = loadingPlaceholder;
                 break;
 
+            case RendererType.material:
+                Material material = targetMaterial;
+                material.mainTexture = loadingPlaceholder;
+                break;
+
             case RendererType.uiImage:
                 Image image = targetObj.GetComponent<Image>();
                 Sprite sprite = Sprite.Create(loadingPlaceholder,
@@ -448,13 +468,13 @@ public class Davinci : MonoBehaviour
 
         Color color;
 
-        if (targetObj != null)
+        if (targetObj != null || targetMaterial != null) { 
             switch (rendererType)
             {
                 case RendererType.renderer:
                     Renderer renderer = targetObj.GetComponent<Renderer>();
 
-                    if (renderer == null || renderer.material == null)
+                    if (renderer == null || renderer.materials[1] == null)
                         break;
 
                     renderer.material.mainTexture = texture;
@@ -475,6 +495,42 @@ public class Davinci : MonoBehaviour
 
                             if (renderer != null)
                                 renderer.material.color = color;
+
+                            yield return null;
+                        }
+                    }
+
+                    break;
+
+                case RendererType.material:
+                    Material material = targetMaterial;
+
+                    if (material == null)
+                        break;
+
+                    material.mainTexture = texture;
+                    float maxAlphaTex;
+
+                    if (material.HasProperty("_Color"))
+                    {
+                        material.SetColor("_BaseColor", Color.white);
+                    }
+
+                    if (fadeTime > 0 && material.HasProperty("_Color"))
+                    {
+                        color = material.color;
+                        maxAlphaTex = color.a;
+
+                        color.a = 0;
+
+                        material.color = color;
+                        float time = Time.time;
+                        while (color.a < maxAlphaTex)
+                        {
+                            color.a = Mathf.Lerp(0, maxAlphaTex, (Time.time - time) / fadeTime);
+
+                            if (material != null)
+                                material.color = color;
 
                             yield return null;
                         }
@@ -542,6 +598,7 @@ public class Davinci : MonoBehaviour
                     }
                     break;
             }
+        }
 
         if (OnLoadedAction != null)
             OnLoadedAction.Invoke();
@@ -549,7 +606,6 @@ public class Davinci : MonoBehaviour
         if (enableLog)
             Debug.Log("[Davinci] Image has been loaded.");
 
-        success = true;
         finish();
     }
 
@@ -573,7 +629,6 @@ public class Davinci : MonoBehaviour
 
     private void error(string message)
     {
-        success = false;
 
         if (enableLog)
             Debug.LogError("[Davinci] Error : " + message);
