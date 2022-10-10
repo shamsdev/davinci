@@ -1,0 +1,9 @@
+{
+    "name": "com.shamsdev.davinci",
+    "displayName": "Davinci",
+    "version": "1.2.0",
+    "unity": "2018.3",
+    "description": "A powerful, easy-to-use image downloading and caching library for Unity in Run-Time!",
+    "license": "MIT"
+  
+}
